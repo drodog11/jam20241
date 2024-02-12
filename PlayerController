@@ -1,0 +1,36 @@
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    [Header("Actions")]
+    public bool flashLightActive;
+    public GameObject flashLightLight;
+    
+    private void Update()
+    {
+        #region FlashLight
+        if(Input.GetKeyDown(KeyCode.mouse(1))){flashLightActive = ?flashLightActive false : true}
+        flashLightLight.setActive(flashLightActive);
+        #endregion
+    
+        #region Interact
+        if(Input.GetKeyDown(keycode.mouseDown(0)))
+        {
+            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 5.0f))
+            {
+                if(hit.Gameobject.tag == "Lever")
+                {
+                    //Chance lights to be off if either the lights are flickering or if its off
+                    RoomManager.instance.lightsActive = ?RoomManager.instance.lightsActive false:true;
+                }
+                if(hit.Gameobject.tag == "Door")
+                {
+                    RoomManager.instance.doorHealth += 5;
+                }
+            }
+        }
+        #endregion
+    }
+}

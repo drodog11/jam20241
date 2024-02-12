@@ -1,0 +1,63 @@
+using UnityEngine;
+
+public class RoomManager : MonoBehaviour
+{
+    [Header("Admin")]
+    public GameObject player;
+
+    [Header("Objectives")]
+    public float doorHealth;
+    public float doorStartHealth;
+    public float wallHealth;
+    
+    [Header("Enemies")]
+    public float lightEnemyChance;
+
+    public float shhEnemyChance;
+    public bool shhEnemyActive;
+    public float shhEnemyTimeActive;
+    public float shhEnemyThreshhold;
+
+    public float wallCrumblerChance;
+    public bool wallCrumberActive;
+    public float wallCrumberTimeActive;
+    public float wallCrumberThreshhold;
+
+    public float darkCreeperChance;
+    public bool darkCreeperActive;
+    public float darkCreeperTimeActive;
+    public float darkCreeperThreshhold;
+
+    private void Update()
+    {
+        #region Enemies
+        #region LightEnemy
+        if(Random.Range(0f,1f) <= lightEnemyChance)
+        {
+            //turn off lights
+        }
+        #endregion
+        #region ShhEnemy
+        if(shhEnemyActive)
+        {
+            shhEnemyTimeActive += .01f;
+            if(shhEnemyTimeActive >= shhEnemyThreshold){shhEnemyActive = false;}
+        }else if(Random.Range(0f,1f <= shhEnemyChance)){shhEnemyActive = true;}
+        #endregion
+        #region WallCrumber
+        if(wallCrumberActive)
+        {
+            wallCrumberTimeActive += .01f;
+            if(wallCrumberTimeActive >= wallCrumberThreshhold){wallCrumberActive = false;}
+        }else if(Random.Range(0f,1f <= wallCrumblerChance)){wallCrumberActive = true;}
+        #endregion
+        #region DarkCreeper
+        if(darkCreeperActive)
+        {
+            shhEnemyTimeActive += .01f;
+            if(darkCreeperTimeActive >= darkCreeperThreshhold){darkCreeperActive = false;}
+        }else if(Random.Range(0f,1f <= darkCreeperChance)){darkCreeperActive = true;}
+        #endregion
+        #endregion
+    }
+}

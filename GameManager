@@ -1,0 +1,15 @@
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    [Header("Admin")]
+    public roomManager roomManager;
+    public GameObject player;
+
+    [Header("Game")]
+    public int currentRound;
+
+    [Header("Round")]
+    public int roundTime;
+    public int roundStartTime
+}
