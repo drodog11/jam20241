@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundMask;
 
     bool isGrounded;
+    public bool canMove;
 
     [Header("Actions")]
     public bool flashLightActive;
@@ -50,6 +51,7 @@ public class PlayerController : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
+        if(canMove)
         Vector3 move = transform.right * x + transform.forward * z;
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && isGrounded)
@@ -63,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(move * speed * Time.deltaTime);
 
-        if(Input.GetButtonDown("Jump") && isGrounded)
+        if(Input.GetButtonDown("Jump") && isGrounded && canMove)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
@@ -90,10 +92,14 @@ public class PlayerController : MonoBehaviour
                 }
                 if (hit.transform.gameObject.tag == "Door")
                 {
-                    MapManager.instance.doorHealth += 5;
+                    repairing = true;
                 }
             }
         }
+        #endregion
+
+        #region Repair
+        if(repairing && ())
         #endregion
     }
 }

@@ -83,15 +83,15 @@ public class MapManager : MonoBehaviour
         if (shhEnemyActive)
         {
             shhEnemyTimeActive += .01f;
-            if (shhEnemyTimeActive >= shhEnemyThreshhold) { shhEnemyActive = false; }
+            if (shhEnemyTimeActive >= shhEnemyThreshhold) { shhEnemyActive = false; GameManager.instance.PlaySoundGlobal(enemyLeave); }
         }
-        else if (Random.Range(0f, 1f) <= shhEnemyThreshhold) { shhEnemyActive = true; }
+        else if (Random.Range(0f, 1f) <= shhEnemyThreshhold) { shhEnemyActive = true; GameManager.instance.PlaySoundGlobal(ShhEnemyActive); }
         #endregion
         #region WallCrumber
         if (wallCrumberActive)
         {
-            wallCrumberTimeActive += .01f;
-            if (wallCrumberTimeActive >= wallCrumberThreshhold) { wallCrumberActive = false; }
+            wallHealth -= .001f;
+            if (1 >= wallCrumberThreshhold) { wallCrumberActive = false; }
         }
         else if (Random.Range(0f, 1f) <= wallCrumblerChance) { wallCrumberActive = true; }
         #endregion
@@ -99,16 +99,18 @@ public class MapManager : MonoBehaviour
         if (darkCreeperActive)
         {
             shhEnemyTimeActive += .01f;
-            if (darkCreeperTimeActive >= darkCreeperThreshhold) { darkCreeperActive = false; }
+            if (darkCreeperTimeActive >= darkCreeperThreshhold) { darkCreeperActive = false;
+            if(lightState){GameManager.instance.PlaySoundGlobal(playerDieSound);} else{GameManager.instance.PlaySoundGlobal(darkCreeperLeave);}
+            }
         }
-        else if (Random.Range(0f, 1f) <= darkCreeperChance) { darkCreeperActive = true; }
+        else if (Random.Range(0f, 1f) <= darkCreeperChance) { darkCreeperActive = true; GameManager.instance.PlaySoundGlobal(darkCreeperSummon);}
         #endregion
         #endregion
         #region Door
         if(!player.GetComponent<PlayerController>().repairing)
         {
             doorHealth -= .005f;
-        }
+        }else{doorHealth += .01f; }
 
         for(int i = 0; i < woodPlanks.Length; i++)
         {
@@ -116,10 +118,10 @@ public class MapManager : MonoBehaviour
             if (doorHealth >= (doorStartHealth * .25f) * (i + 1))
             {
                 woodPlanks[i].SetActive(true);
-                if (!woodPlanksLastFrame[i]) {/*play build sound;*/}
+                if (!woodPlanksLastFrame[i]) {GameManager.instance.PlaySoundGlobal(woodBuild);}
                 woodPlanksLastFrame[i] = true;
             }
-            else { if (woodPlanksLastFrame[i]) {/*play break sound;*/} woodPlanksLastFrame[i] = false; }
+            else { if (woodPlanksLastFrame[i]) {GameManager.instance.PlaySoundGlobal(woodBreak);} woodPlanksLastFrame[i] = false; }
         }
         #endregion
     }
