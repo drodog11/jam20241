@@ -1,33 +1,96 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
+    CharacterController characterController;
+    public Camera cam;
+
+    public float speed = 15f;
+    public float sprintMult = 2;
+    float startingSpeed;
+
+    Vector3 velocity;
+    public float gravity = -9.81f;
+    public float jumpHeight = 3f;
+
+    public Transform groundCheck;
+    public float groundDistance = .4f;
+    public LayerMask groundMask;
+
+    bool isGrounded;
+
     [Header("Actions")]
     public bool flashLightActive;
     public GameObject flashLightLight;
-    
-    private void Update()
+
+    public bool repairing;
+
+    // Start is called before the first frame update
+    void Start()
     {
-        #region FlashLight
-        if(Input.GetKeyDown(KeyCode.mouse(1))){flashLightActive = ?flashLightActive false : true}
-        flashLightLight.setActive(flashLightActive);
-        #endregion
-    
-        #region Interact
-        if(Input.GetKeyDown(keycode.mouseDown(0)))
+        characterController = GetComponent<CharacterController>();
+        startingSpeed = speed;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        #region Movement
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if(isGrounded && velocity.y < 0)
         {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+            velocity.y = -2f;
+        }
+
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * x + transform.forward * z;
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && isGrounded)
+        {
+            speed = startingSpeed * sprintMult;
+        }
+        else
+        {
+            speed = startingSpeed;
+        }
+
+        characterController.Move(move * speed * Time.deltaTime);
+
+        if(Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+        characterController.Move(velocity * Time.deltaTime);
+        #endregion
+        #region FlashLight
+        if (Input.GetKeyDown(KeyCode.Mouse1)) { flashLightActive = flashLightActive ? false : true; }
+        flashLightLight.SetActive(flashLightActive);
+        #endregion
+
+        #region Interact
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 5.0f))
             {
-                if(hit.Gameobject.tag == "Lever")
+                if (hit.transform.gameObject.tag == "Lever")
                 {
                     //Chance lights to be off if either the lights are flickering or if its off
-                    RoomManager.instance.lightsActive = ?RoomManager.instance.lightsActive false:true;
+                    MapManager.instance.lightState = MapManager.instance.lightState? false:true;
                 }
-                if(hit.Gameobject.tag == "Door")
+                if (hit.transform.gameObject.tag == "Door")
                 {
-                    RoomManager.instance.doorHealth += 5;
+                    MapManager.instance.doorHealth += 5;
                 }
             }
         }

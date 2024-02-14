@@ -1,7 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class RoomManager : MonoBehaviour
+public class MapManager : MonoBehaviour
 {
+    #region Singleton
+
+    public static MapManager instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    #endregion
+
     [Header("Admin")]
     public GameObject player;
 
@@ -9,7 +22,10 @@ public class RoomManager : MonoBehaviour
     public float doorHealth;
     public float doorStartHealth;
     public float wallHealth;
-    
+
+    public GameObject[] woodPlanks;
+    public bool[] woodPlanksLastFrame;
+
     [Header("Enemies")]
     public float lightEnemyChance;
 
@@ -28,36 +44,83 @@ public class RoomManager : MonoBehaviour
     public float darkCreeperTimeActive;
     public float darkCreeperThreshhold;
 
+    [Header("Lights")]
+    public float powerLevel;
+    public float flickerRate;
+    public bool flickering;
+    public bool lightState;
+    public GameObject[] lights;
+
+    [Header("Sounds")]
+    public AudioClip woodBreak;
+    public AudioClip woodBuild;
+
     private void Update()
     {
+        #region Lights
+        //Run out of Power
+        if(powerLevel <= 0){lightState = false;}
+
+        //Control Lights based of bool
+        for(int i = 0; i < lights.Length; i++)
+        {
+            if (!flickering) { lights[i].SetActive(lightState); }
+            else { lights[i].SetActive(false); }
+        }
+
+        //Flicker
+        if(!flickering && Random.Range(0f,1f) <= flickerRate && lightState) {flickering = true;}
+        if(flickering && Random.Range(0f,1f) <= .01f) {flickering = false;}
+        #endregion
         #region Enemies
         #region LightEnemy
-        if(Random.Range(0f,1f) <= lightEnemyChance)
+        if (Random.Range(0f, 1f) <= lightEnemyChance)
         {
-            //turn off lights
+            lightState = false;
         }
         #endregion
         #region ShhEnemy
-        if(shhEnemyActive)
+        if (shhEnemyActive)
         {
             shhEnemyTimeActive += .01f;
-            if(shhEnemyTimeActive >= shhEnemyThreshold){shhEnemyActive = false;}
-        }else if(Random.Range(0f,1f <= shhEnemyChance)){shhEnemyActive = true;}
+            if (shhEnemyTimeActive >= shhEnemyThreshhold) { shhEnemyActive = false; }
+        }
+        else if (Random.Range(0f, 1f) <= shhEnemyThreshhold) { shhEnemyActive = true; }
         #endregion
         #region WallCrumber
-        if(wallCrumberActive)
+        if (wallCrumberActive)
         {
             wallCrumberTimeActive += .01f;
-            if(wallCrumberTimeActive >= wallCrumberThreshhold){wallCrumberActive = false;}
-        }else if(Random.Range(0f,1f <= wallCrumblerChance)){wallCrumberActive = true;}
+            if (wallCrumberTimeActive >= wallCrumberThreshhold) { wallCrumberActive = false; }
+        }
+        else if (Random.Range(0f, 1f) <= wallCrumblerChance) { wallCrumberActive = true; }
         #endregion
         #region DarkCreeper
-        if(darkCreeperActive)
+        if (darkCreeperActive)
         {
             shhEnemyTimeActive += .01f;
-            if(darkCreeperTimeActive >= darkCreeperThreshhold){darkCreeperActive = false;}
-        }else if(Random.Range(0f,1f <= darkCreeperChance)){darkCreeperActive = true;}
+            if (darkCreeperTimeActive >= darkCreeperThreshhold) { darkCreeperActive = false; }
+        }
+        else if (Random.Range(0f, 1f) <= darkCreeperChance) { darkCreeperActive = true; }
         #endregion
+        #endregion
+        #region Door
+        if(!player.GetComponent<PlayerController>().repairing)
+        {
+            doorHealth -= .005f;
+        }
+
+        for(int i = 0; i < woodPlanks.Length; i++)
+        {
+            woodPlanks[i].SetActive(false);
+            if (doorHealth >= (doorStartHealth * .25f) * (i + 1))
+            {
+                woodPlanks[i].SetActive(true);
+                if (!woodPlanksLastFrame[i]) {/*play build sound;*/}
+                woodPlanksLastFrame[i] = true;
+            }
+            else { if (woodPlanksLastFrame[i]) {/*play break sound;*/} woodPlanksLastFrame[i] = false; }
+        }
         #endregion
     }
 }
