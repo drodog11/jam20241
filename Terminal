@@ -1,0 +1,107 @@
+using UnityEngine;
+
+[System.Serliazable]
+public class WaitTask()
+{
+    public float timeSpent;
+    public float timeNeeded;
+
+    public bool completed;
+}
+
+public class Terminal : MonoBehaviour
+{
+    [Header("Admin")]
+    public GameObject player;
+    public bool playerUsing;
+
+    [Header("Tasks")]
+    public bool waitTaskCompleted()
+    {
+        for(int i = 0; i < waitTasks.Length; i++)
+        {
+            if(!waitTasks[i].completed){return false;}
+        }
+        return true;
+    };
+    public bool clickTaskCompleted;
+    public bool pipesTaskCompleted()
+    {
+        if(pipesFixed == pipesNeededToFix){return true}
+        else {return false;}
+    };
+
+    [Header("Wait Task")]
+    public GameObject waitTaskScreen;
+    public GameObject waitTaskButton;
+    public Slider waitTaskCompletionLength;
+
+    public int waitTaskSelected;
+
+    public GameObject waitTaskMiniScreen;
+
+    public WaitTask[] waitTasks;
+    public GameObject[] taskButtons;
+
+    public void SetWaitTask(int taskId_)
+    {
+        waitTaskSelected = taskId_;
+        waitTaskCompletionLength.maxValue = waitTasks[waitTaskSelected]timeNeeded
+    }
+
+    [Header("Pipe Task")]
+    public GameObject pipeTaskScreen;
+    public GameObject pipeTaskButton;
+
+    public int pipesFixed;
+    public int pipesNeededToFix;
+
+    public TMP_Text[] pipeStatusTexts;
+    public int[] pipeStatus;
+    public int[] pipeRequiredStatus;
+
+    public bool isPipeFixed()
+    {
+        for(int i = 0; i < pipeStatus.Length; i++)
+        {
+            if(pipeStatus[i] != pipeRequiredStatus[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void Update()
+    {
+       if(playerUsing)
+       {
+            if(waitTaskScreen.enabled == true)
+            {
+                if(waitTaskSelected != 0){waitTaskMiniScreen.SetActive(true;)
+                waitTasks[waitTaskSelected] += .005f;
+                waitTaskCompletionLength.value = waitTasks[waitTaskSelected].timeSpent;
+                }else{waitTaskMiniScreen.SetActive(fasle);}
+                if(waitTasks[waitTaskSelected].timeSpent >= waitTasks[waitTaskSelected].timeNeeded)
+                {
+                    waitTasks[waitTaskSelected].completed = true;
+                    waitTaskSelected = 0;
+                }
+            }
+            if(pipeTaskScreen.enabled == true)
+            {
+                if(pipe)
+            }
+       }
+       if(waitTaskCompleted())
+       {
+            waitTaskButton.SetActive(false);
+            waitTaskScreen.SetActive(false);
+       }else{waitTaskButton.SetActive(true)};
+        if(pipesTaskCompleted())
+        {
+            pipeTaskScreen.SetActive(false);
+            pipeTaskButton.SetActive(false);
+        }else{pipeTaskButton.SetActive(true);}
+    }
+}
